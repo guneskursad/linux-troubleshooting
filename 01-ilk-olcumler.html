@@ -107,7 +107,7 @@ uptime</code></pre></div><div class="code-block output" data-kind="example-outpu
 <p class="note">Not: Çıkan process, parent <code>wait()</code> çağırana kadar <code>Z</code> state’inde kalır. Parent <code>SIGCHLD</code>’yi yok sayarsa (<code>SIG_IGN</code>) zombie oluşmaz. Parent hiç <code>wait()</code> çağırmazsa zombie birikir. Parent ölürse init zombie’yi temizler.</p>
 </div>
 
-<p><strong>top çıktısında aynı state’ler</strong> (<code>S</code> sütunu):</p>
+<p><strong>top çıktısındaki state’ler ve anlamları</strong> (<code>S</code> sütunu):</p>
 <table>
 <tr><th>S</th><th>PID</th><th>%CPU</th><th>COMMAND</th><th>Neden bu state’te?</th></tr>
 <tr class="load"><td class="s">R</td><td>2210</td><td>98.0</td><td>stress-ng</td><td>CPU’da çalışıyor. Sırada bekleyenler de <code>R</code> görünür.</td></tr>
