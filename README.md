@@ -7,7 +7,7 @@ Linux sunucularda sorun giderme yazıları. Her yazı bağımsız bir case anlat
 ## Yazılar
 
 1. [İlk ölçümler](01-ilk-olcumler.html)
-2. CPU ve load (yakında)
+2. [CPU ve load](02-cpu-ve-load.html)
 3. Memory ve bekleme (yakında)
 4. Disk ve I/O (yakında)
 5. Network ve packet drop (yakında)
