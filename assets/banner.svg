@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-labelledby="t d">
+<title id="t">linux / troubleshooting</title>
+<desc id="d">Measure, read the sample output, interpret.</desc>
+<rect width="1200" height="360" fill="#f8f6ef"/>
+<g stroke="#171713" stroke-width="3" stroke-linejoin="round">
+<rect x="1.5" y="1.5" width="1197" height="357" rx="6" fill="none"/>
+<rect x="700" y="60" width="140" height="240" fill="#ff875f"/>
+<rect x="840" y="60" width="140" height="240" fill="#85dce6"/>
+<rect x="980" y="60" width="140" height="240" fill="#b9a2f4"/>
+<path d="M700 180H1120" fill="none" stroke-dasharray="7 8"/>
+</g>
+<g fill="#171713" font-family="Arial,Helvetica,sans-serif">
+<text x="64" y="120" font-size="22">Ölçüm · Çıktı · Yorum</text>
+<text x="60" y="210" font-size="84" font-weight="700" letter-spacing="-4">linux</text>
+<text x="60" y="290" font-size="84" letter-spacing="-4">troubleshooting</text>
+<g font-size="20" text-anchor="middle">
+<text x="770" y="120">komut</text><text x="910" y="120">çıktı</text><text x="1050" y="120">yorum</text>
+<text x="770" y="250" font-family="ui-monospace,Menlo,monospace" font-size="30">$_</text>
+<text x="910" y="250" font-family="ui-monospace,Menlo,monospace" font-size="30">%util</text>
+<text x="1050" y="250" font-family="ui-monospace,Menlo,monospace" font-size="30">→ ?</text>
+</g></g></svg>
