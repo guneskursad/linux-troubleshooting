@@ -1,0 +1,114 @@
+/* Muninn scenes for the CPU and load page, Case A draft.
+   Uses the page tokens: --paper --ink --coral --cyan --purple --soft --surface --line.
+   All motion is driven by muninn.js render(t); CSS only lays things out. */
+
+.mu-scene{margin:26px 0 34px;border:var(--line);border-radius:4px;background:var(--surface);display:grid;grid-template-columns:minmax(150px,240px) minmax(0,1fr);overflow:hidden}
+.mu-actor{--h:268px;position:relative;background:var(--soft);border-right:var(--line);display:flex;align-items:flex-end;justify-content:center;padding:16px 10px 0;min-height:300px}
+.mu-body{padding:18px 20px;display:flex;flex-direction:column;gap:14px;justify-content:center;min-width:0}
+
+/* stacked sprites, one visible at a time */
+.mu-sprites{position:relative;width:calc(var(--h)*.98);height:var(--h);transform-origin:50% 100%;flex:none}
+.mu-sprites img,.mu-walker img{position:absolute;left:50%;bottom:0;height:var(--h);width:auto;max-width:none;transform:translateX(-50%);visibility:hidden;user-select:none;-webkit-user-drag:none}
+
+.mu-say{position:relative;border:var(--line);border-radius:4px;background:var(--paper);padding:10px 14px;font-size:15px;line-height:1.5;min-height:5.2em}
+.mu-say::before{content:"";position:absolute;left:-9px;top:18px;width:14px;height:14px;background:var(--paper);border-left:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);transform:rotate(45deg)}
+.mu-cap{font:12px var(--mono);opacity:.75}
+
+/* scene 1: load and vCPU */
+.mu-dots{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.mu-dots span{display:block;border:var(--line);border-radius:4px;background:var(--cyan);height:34px;position:relative;opacity:.35}
+.mu-dots span::after{content:attr(data-n);position:absolute;left:0;right:0;bottom:-18px;text-align:center;font:11px var(--mono)}
+.mu-load{font:700 22px var(--mono)}
+.mu-load small{font:12px var(--mono);font-weight:400;opacity:.75;margin-left:8px}
+
+/* scene 2: per-CPU bars */
+.mu-cpus{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.mu-cpu{display:flex;flex-direction:column;align-items:center;gap:4px}
+.mu-cpu .well{width:100%;height:130px;border:var(--line);border-radius:4px;background:var(--paper);position:relative;overflow:hidden;display:flex;align-items:flex-end}
+.mu-cpu .fill{width:100%;height:1.5%;background:var(--cyan)}
+.mu-cpu.hot .fill{background:var(--coral)}
+.mu-cpu b{font:700 12px var(--mono)}
+.mu-cpu i{font:normal 11px var(--mono);opacity:.8}
+
+/* scene 3: terminal */
+.mu-term{background:var(--ink);color:var(--paper);border-radius:4px;padding:12px 14px;font:13px/1.7 var(--mono);min-height:150px;overflow-x:auto}
+.mu-term .p{color:var(--cyan)}
+.mu-term .cur{display:inline-block;width:8px;height:15px;background:var(--paper);vertical-align:-2px;margin-left:2px}
+.mu-term .row{white-space:pre;opacity:0}
+.mu-term .row.hl{background:var(--coral);color:var(--ink);font-weight:700}
+
+/* scene 4: walking to the thread */
+.mu-scene.wide{grid-template-columns:1fr}
+.mu-track{position:relative;min-height:390px;background:var(--soft);display:grid;grid-template-columns:44% 1fr;align-items:end}
+.mu-walkway{position:absolute;left:0;top:0;bottom:0;width:44%}
+.mu-walker{--h:230px;position:absolute;left:0;bottom:2px;width:calc(var(--h)*.611);height:var(--h)}
+.mu-track .mu-lanes{grid-column:2;padding:18px 20px;display:flex;flex-direction:column;gap:10px;align-self:center}
+.mu-lane{display:grid;grid-template-columns:78px 1fr 104px;gap:10px;align-items:center;font:12px var(--mono)}
+.mu-lane .bar{height:26px;border:var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
+.mu-lane .bar i{display:block;height:100%;width:2%;background:var(--cyan)}
+.mu-lane.hot .bar i{background:var(--coral)}
+.mu-track .mu-say{position:absolute;left:3%;top:14px;max-width:40%;z-index:2}
+.mu-track .mu-say::before{left:34px;top:auto;bottom:-9px;transform:rotate(-45deg)}
+
+/* scene 5: run queue */
+.mu-queue{display:flex;flex-direction:column;gap:14px}
+.mu-qrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.mu-queue .lbl{font:700 12px var(--mono);width:96px}
+.mu-slots{display:flex;gap:8px}
+.mu-slots span{width:54px;height:34px;border:1.5px dashed var(--ink);border-radius:4px;opacity:.55}
+.mu-cpu3{position:relative;border:var(--line);border-radius:4px;background:var(--surface);padding:6px 10px 6px 12px;display:flex;align-items:center;gap:10px;min-width:250px;height:46px;overflow:hidden}
+.mu-cpu3 .chip{position:absolute;left:-150px;top:5px;border:var(--line);border-radius:4px;background:var(--coral);padding:4px 10px;font:700 12px var(--mono);opacity:0}
+.mu-cpu3 b{font:700 13px var(--mono)}
+.mu-r{font:700 22px var(--mono)}
+.mu-r small{font:12px var(--mono);font-weight:400;opacity:.75;margin-left:8px}
+.mu-spark{position:absolute;right:16%;top:30px;width:34px;height:34px;opacity:0;pointer-events:none}
+.mu-spark svg{width:100%;height:100%;fill:#ffb224;stroke:var(--ink);stroke-width:1.2}
+
+/* hero helper */
+.mu-hero{display:flex;align-items:flex-end;gap:16px;margin-top:22px}
+.mu-hero .mu-sprites{--h:170px;width:calc(var(--h)*.55)}
+.mu-hero .mu-say{max-width:300px;margin-bottom:56px;min-height:0}
+
+@media(max-width:760px){
+  .mu-scene{grid-template-columns:1fr}
+  .mu-actor{--h:210px;border-right:0;border-bottom:var(--line);min-height:220px}
+  .mu-say::before{left:24px;top:-9px;transform:rotate(135deg)}
+  .mu-track{display:block;min-height:0}
+  .mu-walkway{position:relative;width:100%;height:250px}
+  .mu-walker{--h:220px}
+  .mu-track .mu-say{position:relative;left:auto;top:auto;max-width:none;margin:14px 14px 0}
+  .mu-track .mu-say::before{left:24px;top:-9px;bottom:auto;transform:rotate(135deg)}
+  .mu-lane{grid-template-columns:70px 1fr 54px}
+  .mu-hero .mu-sprites{--h:130px}
+}
+@media print{.mu-scene{break-inside:avoid}}
+
+.cpu-hero{display:block;width:100%;max-width:460px;height:auto;margin-top:22px}
+
+/* heading peeks: Muninn stands at the right end of a step heading, outside any box */
+.article h3.has-mu{position:relative;display:flex;align-items:flex-end;min-height:92px;padding-right:96px;margin-top:34px}
+.mu-peek{position:absolute;right:0;bottom:-4px;height:92px;width:70px;pointer-events:none;display:flex;align-items:flex-end;justify-content:center}
+.mu-peek img{height:100%;width:auto;max-width:none;transform-origin:50% 100%;user-select:none;-webkit-user-drag:none}
+.mu-armed .mu-peek img{opacity:0;transform:translateY(26px)}
+.mu-armed .mu-peek.in img{opacity:1;transform:none;transition:opacity .4s,transform .5s cubic-bezier(.2,1.4,.4,1);animation:mu-bob 3.6s ease-in-out .6s infinite}
+@keyframes mu-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.mu-armed .mu-peek img{opacity:1;transform:none;animation:none!important}}
+@media (max-width:640px){.article h3.has-mu{min-height:70px;padding-right:72px}.mu-peek{height:70px;width:54px}}
+@media print{.mu-peek{display:none}.article h3.has-mu{min-height:0;padding-right:0}}
+
+/* Case B/C/D generic scenes */
+.mu-metric{font:700 22px var(--mono)}
+.mu-stack{display:flex;height:46px;border:var(--line);border-radius:4px;overflow:hidden;background:var(--paper)}
+.mu-stack i{display:block;height:100%;width:0}
+.mu-legend{display:flex;gap:14px;flex-wrap:wrap;font:12px var(--mono)}
+.mu-legend span::before{content:"";display:inline-block;width:11px;height:11px;border:1.5px solid var(--ink);margin-right:5px;vertical-align:-1px;background:var(--c)}
+.s-us{background:var(--cyan)}.s-sy{background:var(--purple)}.s-st{background:var(--coral)}.s-wa{background:#ffb224}.s-id{background:transparent}
+.mu-cpus.seg .well{flex-direction:column-reverse;align-items:stretch}
+.mu-cpus.seg .well i{display:block;width:100%;height:0}
+.mu-rows{display:flex;flex-direction:column;gap:12px}
+.mu-rows .mu-lane{grid-template-columns:104px 1fr 120px}
+.mu-video{margin:26px 0 34px}
+.mu-video video{display:block;width:100%;height:auto;border:var(--line);border-radius:4px;background:var(--surface)}
+
+:root{--amber:#ffb224}
+.mu-dots.hot span{background:var(--coral)}
