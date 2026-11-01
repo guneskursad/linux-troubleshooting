@@ -30,7 +30,7 @@
     const m = {};
     names.forEach(n => {
       const i = new Image();
-      i.src = BASE + (n.startsWith('walk/') ? 'img/' + n + '.png' : 'img/muninn-' + n + '.png');
+      i.src = BASE + (/^(walk|mop|oom|cgroup|wb)\//.test(n) ? 'img/' + n + '.png' : 'img/muninn-' + n + '.png');
       i.alt = ''; i.draggable = false;
       box.appendChild(i); m[n] = i;
     });
@@ -195,6 +195,31 @@
       render(el, t) { act(el._st, 'idle', t, this.T, { k: 1 }); }
     }
   };
+  // ---- video loop scenes (Seedance clips): the clip loops itself, JS drives bars and captions ----
+  const videoScene = o => ({
+    T: o.T, hold: 0,
+    init(el) {
+      el._vid = el.querySelector('video');
+      el._bars = [...el.querySelectorAll('.mu-rows .mu-lane')];
+      if (reduce) el._vid.removeAttribute('autoplay');
+    },
+    render(el, t) {
+      const p = kf(t, [[0, 0], [.8, 0], [2.4, 1], [this.T - 1.8, 1], [this.T - .8, 0]]);
+      el._bars.forEach(l => { l.querySelector('i').style.width = Math.max(2, parseFloat(l.dataset.v) * p) + '%'; });
+      const d = el._vid.duration || o.clip, ph = ((el._vid.currentTime || 0) % d) / d;
+      const node = el.querySelector('.mu-say span'), txt = ph < o.split ? o.say[0] : o.say[1];
+      if (node.textContent !== txt) node.textContent = txt;
+    }
+  });
+  scenes.mop = videoScene({ T: 12, clip: 4, split: .34, say: ['Swap dolu. Kernel sayfaları RAM ile disk arasında taşıyor.', 'si 80–120, so 40–64 MiB/s. Task’lar bekliyor. Silmeye devam ediyorum, ama kirlilik bitmiyor.'] });
+  scenes.oom = videoScene({ T: 12, clip: 6, split: .45, say: ['RSS her dakika 512 MiB büyüyor. Muninn RAM yığıyor.', 'Host dolunca OOM killer devreye girer. PID 4242 öldürülür. Sonra process yeniden başlar.'] });
+  scenes.cgroup = videoScene({ T: 12, clip: 4, split: .3, say: ['Host’ta 20 GiB boş. Ama bu kutunun sınırı var.', 'cgroup limitine dayanınca OOM killer yalnız bu unit’i hedefler.'] });
+  scenes.wb = videoScene({ T: 12, clip: 4, split: .3, say: ['Dirty page’leri tek tek damgalayıp diske veriyorum.', 'Dirty 7 GiB, writeback 512 MiB. Backlog küçülmüyor.'] });
+  scenes.cpua = videoScene({ T: 12, clip: 4, split: .3, say: ['Load düşük, ortalama CPU düşük. Ama tek CPU yanıyor.', 'CPU3 %98. Yedi CPU boş. Ortalama bunu gizliyor.'] });
+  scenes.cpub = videoScene({ T: 12, clip: 4, split: .3, say: ['Load 14.20. 8 vCPU. Run queue dolu.', 'Sekiz CPU’nun hepsi dolu. Gerçek CPU saturation: r = 13.'] });
+  scenes.cpuc = videoScene({ T: 12, clip: 4, split: .3, say: ['Load 12.40. CPU boş görünüyor. Load nereden geliyor?', 'CPU değil, disk bekliyor: b = 10, wa %50, sda %99 dolu.'] });
+  scenes.cpud = videoScene({ T: 16, clip: 8, split: .3, say: ['Guest içinde CPU %60. Ama VM yavaş.', 'st %20: hypervisor CPU’yu başkasına verdi. Sorun VM’in dışında.'] });
+
   // ---- generic scenes for Case B, C and D (config driven) ----
   const prog = (t, T) => kf(t, [[0, 0], [.8, 0], [2.4, 1], [T - 1.8, 1], [T - .8, 0]]);
   const TXT = (s, k) => { const n = s.querySelector(k); return n; };
@@ -248,7 +273,26 @@
     c4: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'], [3.4, 'tired'], [9.4, 'type']], pops: [3.4], say: [[0, 'Hangi disk meşgul?'], [3.4, 'sda %99 dolu. İstekler kuyrukta bekliyor.'], [9.4, 'Hangi disk meşgul?']] }],
     d1: ['load', { T: 10, hold: 6, load: 9.1, poses: [[0, 'idle'], [3.2, 'think'], [9, 'idle']], pops: [3.2], say: [[0, 'Load 9.10. 8 vCPU.'], [3.2, 'Load vCPU sayısının üstünde. CPU’nun çalıştığını kanıtlamaz.'], [9, 'Load 9.10. 8 vCPU.']] }],
     d2: ['stack', { T: 10.5, hold: 6, metric: p => 'st %' + Math.round(20 * p), poses: [[0, 'think'], [3.4, 'surprised'], [9.4, 'think']], pops: [3.4], say: [[0, 'VM CPU’yu tam kullanabildi mi?'], [3.4, 'Hayır. %20 steal: hypervisor CPU’yu başkasına verdi.'], [9.4, 'VM CPU’yu tam kullanabildi mi?']] }],
-    d3: ['cpus', { T: 10, hold: 6, poses: [[0, 'idle'], [3.2, 'point'], [9, 'idle']], pops: [3.2], say: [[0, 'Steal tek CPU’da mı?'], [3.2, 'Hayır. Sekiz CPU’da da yaklaşık %20. Sorun VM’in dışında.'], [9, 'Steal tek CPU’da mı?']] }]
+    d3: ['cpus', { T: 10, hold: 6, poses: [[0, 'idle'], [3.2, 'point'], [9, 'idle']], pops: [3.2], say: [[0, 'Steal tek CPU’da mı?'], [3.2, 'Hayır. Sekiz CPU’da da yaklaşık %20. Sorun VM’in dışında.'], [9, 'Steal tek CPU’da mı?']] }],
+    // Memory page, Case A
+    m1: ['stack', { T: 10.5, hold: 6, metric: p => 'free 1.024 · available 20.900 MiB', poses: [[0, 'surprised'], [3.4, 'smug'], [9.4, 'surprised']], pops: [3.4], say: [[0, 'free 1 GiB. Alarm var. Gerçekten sorun mu?'], [3.4, 'available 20,9 GiB. Fark buff/cache: kernel boş RAM’i cache için kullanır.'], [9.4, 'free 1 GiB. Alarm var. Gerçekten sorun mu?']] }],
+    m2: ['rows', { T: 10.5, hold: 6, poses: [[0, 'think'], [3.4, 'smug'], [9.4, 'think']], pops: [3.4], say: [[0, 'Swap’ta 2 GiB veri var. Şu an swap hareketi var mı?'], [3.4, 'si = 0, so = 0. Swap’taki veri eski. Aktif swapping yok.'], [9.4, 'Swap’ta 2 GiB veri var. Şu an swap hareketi var mı?']] }],
+    m3: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'], [3.4, 'smug'], [9.4, 'type']], pops: [3.4], say: [[0, 'Kernel sayfa ararken task’ları bekletiyor mu?'], [3.4, 'scan sıfır. PSI sıfır. Host’ta memory baskısı yok.'], [9.4, 'Kernel sayfa ararken task’ları bekletiyor mu?']] }],
+    m4: ['stack', { T: 11, hold: 6.5, metric: p => 'Buffers + Cached + SReclaimable = ' + Math.round(20276 * p).toLocaleString('tr-TR') + ' MiB', poses: [[0, 'idle'], [3.6, 'point'], [9.8, 'idle']], pops: [3.6], say: [[0, 'Düşük free’yi neyin doldurduğunu hesaplayalım.'], [3.6, '128 + 19.200 + 948 = 20.276 MiB. free içindeki buff/cache ile eşleşir. Page cache illusion.'], [9.8, 'Düşük free’yi neyin doldurduğunu hesaplayalım.']] }],
+    mb1: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'],[3.4, 'point'],[9.4, 'type']], pops: [3.4], say: [[0, 'En büyük RSS sahibi hangi process?'], [3.4, 'PID 4242, app-worker, yaklaşık 12 GiB. Diğerleri küçük.'], [9.4, 'En büyük RSS sahibi hangi process?']] }],
+    mb2: ['rows', { T: 10.5, hold: 6, poses: [[0, 'think'],[3.4, 'surprised'],[9.4, 'think']], pops: [3.4], say: [[0, 'RSS ne kadar hızla büyüyor?'], [3.4, 'Dakikada 512 MiB. Available 8.192 MiB ise yaklaşık 16 dakika kalır.'], [9.4, 'RSS ne kadar hızla büyüyor?']] }],
+    mb3: ['stack', { T: 10.5, hold: 6, metric: p => 'Anon 12 GiB · File 384 MiB · oom_score 783', poses: [[0, 'think'],[3.4, 'point'],[9.4, 'think']], pops: [3.4], say: [[0, 'Büyüyen alan anonymous mu, file cache mi?'], [3.4, 'Anonymous. Pss_Anon 12 GiB, Pss_File yalnız 384 MiB. Cache değil.'], [9.4, 'Büyüyen alan anonymous mu, file cache mi?']] }],
+    mb4: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'],[3.4, 'tired'],[9.4, 'type']], pops: [3.4], say: [[0, 'Kernel bu process’i gerçekten öldürdü mü?'], [3.4, 'Evet. Host OOM killer PID 4242’yi öldürdü. anon-rss 20,6 GiB.'], [9.4, 'Kernel bu process’i gerçekten öldürdü mü?']] }],
+    mc1: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'],[3.4, 'point'],[9.4, 'type']], pops: [3.4], say: [[0, 'Bu OOM hangi kapsamda?'], [3.4, 'CONSTRAINT_MEMCG, app.service. Host OOM değil, cgroup OOM.'], [9.4, 'Bu OOM hangi kapsamda?']] }],
+    mc2: ['rows', { T: 10.5, hold: 6, poses: [[0, 'think'],[3.4, 'smug'],[9.4, 'think']], pops: [3.4], say: [[0, 'Host’un memory’si bitti mi?'], [3.4, 'Hayır. Host’ta 20 GiB available var. Sorun cgroup sınırı.'], [9.4, 'Host’un memory’si bitti mi?']] }],
+    md1: ['stack', { T: 10.5, hold: 6, metric: p => 'wa %' + Math.round(44 * p) + ' · b = 5–7', poses: [[0, 'think'],[3.4, 'surprised'],[9.4, 'think']], pops: [3.4], say: [[0, 'Swap I/O var mı? Task’lar bekliyor mu?'], [3.4, 'si 80–120, so 40–64 MiB/s, b 5–7, wa %44. Swap aktif.'], [9.4, 'Swap I/O var mı? Task’lar bekliyor mu?']] }],
+    md2: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'],[3.4, 'point'],[9.4, 'type']], pops: [3.4], say: [[0, 'Kernel sayfa bulmak için ne kadar uğraşıyor?'], [3.4, 'scan 10.800 sayfa/s, vmeff %75. Direct reclaim 3.600 sayfa/s.'], [9.4, 'Kernel sayfa bulmak için ne kadar uğraşıyor?']] }],
+    md3: ['rows', { T: 10.5, hold: 6, poses: [[0, 'think'],[3.4, 'surprised'],[9.4, 'think']], pops: [3.4], say: [[0, 'Task’lar memory yüzünden ne kadar bekliyor?'], [3.4, 'PSI some %38,4. app-worker saniyede 380 major fault üretiyor.'], [9.4, 'Task’lar memory yüzünden ne kadar bekliyor?']] }],
+    md4: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'],[3.4, 'smug'],[9.4, 'type']], pops: [3.4], say: [[0, 'Swap hangi aygıtta duruyor?'], [3.4, '/dev/vdb1, 8 GiB’in 6 GiB’i dolu. Priority -2, swapfile’dan önce.'], [9.4, 'Swap hangi aygıtta duruyor?']] }],
+    me1: ['rows', { T: 10.5, hold: 6, poses: [[0, 'think'],[3.4, 'surprised'],[9.4, 'think']], pops: [3.4], say: [[0, 'Dirty backlog küçülüyor mu?'], [3.4, 'Hayır. Dirty 5 GiB’den 7 GiB’ye, writeback 256’dan 512 MiB’ye çıktı.'], [9.4, 'Dirty backlog küçülüyor mu?']] }],
+    me2: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'],[3.4, 'point'],[9.4, 'type']], pops: [3.4], say: [[0, 'Kernel ne zaman yazmayı zorlar?'], [3.4, 'Background %10’da başlar. Blocking %20’de yazan process throttle edilir.'], [9.4, 'Kernel ne zaman yazmayı zorlar?']] }],
+    me3: ['rows', { T: 10.5, hold: 6, poses: [[0, 'think'],[3.4, 'tired'],[9.4, 'think']], pops: [3.4], say: [[0, 'Task’lar nerede takılıyor?'], [3.4, 'Üç task D-state. wchan: balance_dirty_pages, wait_on_page_writeback.'], [9.4, 'Task’lar nerede takılıyor?']] }],
+    me4: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'],[3.4, 'point'],[9.4, 'type']], pops: [3.4], say: [[0, 'Beklemenin ucu nereye çıkıyor?'], [3.4, 'bo 224–280 MiB/s, wa %41–49. Konu artık storage: Bölüm 04.'], [9.4, 'Beklemenin ucu nereye çıkıyor?']] }]
   };
   Object.keys(CFG).forEach(k => { scenes[k] = base(CFG[k][1], kinds[CFG[k][0]]); });
 
