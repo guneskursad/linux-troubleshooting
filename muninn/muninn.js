@@ -80,7 +80,7 @@
         el._dots.forEach(d => { d.style.opacity = o.toFixed(3); });
         el._val.textContent = kf(t, [[0, 0], [.4, 0], [1.5, 1.05], [8.2, 1.05], [8.8, 0]]).toFixed(2);
         setText(el, [[0, 'Load 1.05. 8 vCPU. Sakin görünüyor.'],
-          [4.2, 'Düşük load, CPU’nun rahat olduğunu kanıtlamaz. Bir CPU tam doluysa load yine yaklaşık 1.0 görünür.'],
+          [4.2, 'Düşük load, CPU’nun rahat olduğunu kanıtlamaz. Bir CPU tam busy ise load yine yaklaşık 1.0 görünür.'],
           [8.2, 'Load 1.05. 8 vCPU. Sakin görünüyor.']], t);
       }
     },
@@ -103,7 +103,7 @@
           if (c.classList.contains('hot')) c.querySelector('.well').style.boxShadow = '0 0 0 ' + (7 * pulse).toFixed(2) + 'px rgba(255,135,95,.35)';
         });
         setText(el, [[0, 'Ortalama CPU %13. Rahat görünüyor.'], [3.2, 'Dur. CPU3 %98.'],
-          [4.7, 'Yedi CPU boş. Tek CPU dolu. Ortalama bunu gizledi.'],
+          [4.7, 'Yedi CPU idle. Tek CPU busy. Ortalama bunu gizledi.'],
           [10, 'Ortalama CPU %13. Rahat görünüyor.']], t);
       }
     },
@@ -128,9 +128,9 @@
           r.style.opacity = o.toFixed(3);
           r.style.transform = 'translateY(' + ((1 - o) * 4).toFixed(2) + 'px)';
         });
-        setText(el, [[0, 'CPU3 dolu. Şimdi hangi process?'],
+        setText(el, [[0, 'CPU3 busy. Şimdi hangi process?'],
           [5, 'PID 5120, report-gen, %98. Üç thread var ama CPU’yu biri dolduruyor.'],
-          [12.2, 'CPU3 dolu. Şimdi hangi process?']], t);
+          [12.2, 'CPU3 busy. Şimdi hangi process?']], t);
       }
     },
     // 4 · walking to the busy thread
@@ -162,7 +162,7 @@
         const p = kf(t, [[3.2, 0], [4.6, 1], [12, 1], [12.7, 0]]);
         el._bars.forEach(l => { l.querySelector('i').style.width = Math.max(2, parseFloat(l.dataset.v) * p) + '%'; });
         setText(el, [[0, 'Thread’lere bakalım. Hangisi CPU’yu dolduruyor?'],
-          [3.0, 'TID 5120, CPU3, %98. TID 5124 ve 5125 boşta. Tek thread tek CPU’yu doldurur.'],
+          [3.0, 'TID 5120, CPU3, %98. TID 5124 ve 5125 idle. Tek thread tek CPU’yu pegged eder.'],
           [12.7, 'Thread’lere bakalım. Hangisi CPU’yu dolduruyor?']], t);
       }
     },
@@ -184,7 +184,7 @@
         el._spark.style.opacity = a.toFixed(3);
         el._spark.style.transform = 'scale(' + (.4 + .6 * a).toFixed(3) + ') rotate(' + (25 * a).toFixed(1) + 'deg)';
         setText(el, [[0, 'Peki sırada bekleyen iş var mı?'],
-          [3.2, 'Kuyruk boş. r = 1–2. Yavaşlık CPU sıralaması değil, işin tek thread’e bağlı olması.'],
+          [3.2, 'Run queue boş. r = 1–2. Yavaşlık CPU sıralaması değil, işin tek thread’e bağlı olması.'],
           [10, 'Peki sırada bekleyen iş var mı?']], t);
       }
     },
@@ -215,9 +215,9 @@
   scenes.oom = videoScene({ T: 12, clip: 6, split: .45, say: ['RSS her dakika 512 MiB büyüyor. Muninn RAM yığıyor.', 'Host dolunca OOM killer devreye girer. PID 4242 öldürülür. Sonra process yeniden başlar.'] });
   scenes.cgroup = videoScene({ T: 12, clip: 4, split: .3, say: ['Host’ta 20 GiB boş. Ama bu kutunun sınırı var.', 'cgroup limitine dayanınca OOM killer yalnız bu unit’i hedefler.'] });
   scenes.wb = videoScene({ T: 12, clip: 4, split: .3, say: ['Dirty page’leri tek tek damgalayıp diske veriyorum.', 'Dirty 7 GiB, writeback 512 MiB. Backlog küçülmüyor.'] });
-  scenes.cpua = videoScene({ T: 12, clip: 4, split: .3, say: ['Load düşük, ortalama CPU düşük. Ama tek CPU yanıyor.', 'CPU3 %98. Yedi CPU boş. Ortalama bunu gizliyor.'] });
-  scenes.cpub = videoScene({ T: 12, clip: 4, split: .3, say: ['Load 14.20. 8 vCPU. Run queue dolu.', 'Sekiz CPU’nun hepsi dolu. Gerçek CPU saturation: r = 13.'] });
-  scenes.cpuc = videoScene({ T: 12, clip: 4, split: .3, say: ['Load 12.40. CPU boş görünüyor. Load nereden geliyor?', 'CPU değil, disk bekliyor: b = 10, wa %50, sda %99 dolu.'] });
+  scenes.cpua = videoScene({ T: 12, clip: 4, split: .3, say: ['Load düşük, ortalama CPU düşük. Ama tek CPU yanıyor.', 'CPU3 %98. Yedi CPU idle. Ortalama bunu gizliyor.'] });
+  scenes.cpub = videoScene({ T: 12, clip: 4, split: .3, say: ['Load 14.20. 8 vCPU. Run queue uzun.', 'Sekiz CPU’nun hepsi busy. Gerçek CPU saturation: r = 13.'] });
+  scenes.cpuc = videoScene({ T: 12, clip: 4, split: .3, say: ['Load 12.40. CPU idle görünüyor. Load nereden geliyor?', 'CPU değil, disk bekliyor: b = 10, wa %50, sda %99 util.'] });
   scenes.cpud = videoScene({ T: 16, clip: 8, split: .3, say: ['Guest içinde CPU %60. Ama VM yavaş.', 'st %20: hypervisor CPU’yu başkasına verdi. Sorun VM’in dışında.'] });
 
   // ---- generic scenes for Case B, C and D (config driven) ----
@@ -264,13 +264,13 @@
   };
   const CFG = {
     b1: ['load', { T: 10, hold: 6, load: 14.2, poses: [[0, 'idle'], [3.2, 'surprised'], [9, 'idle']], pops: [3.2], say: [[0, 'Load 14.20. 8 vCPU.'], [3.2, 'vCPU başına 1,78 task. CPU’dan fazla iş var.'], [9, 'Load 14.20. 8 vCPU.']] }],
-    b2: ['stack', { T: 10.5, hold: 6, metric: p => 'r = ' + Math.round(13 * p) + ' · 8 vCPU', poses: [[0, 'think'], [3.4, 'point'], [9.4, 'think']], pops: [3.4], say: [[0, 'Kuyrukta kaç task var?'], [3.4, 'r = 13. vCPU 8. Beş task sırada bekliyor.'], [9.4, 'Kuyrukta kaç task var?']] }],
-    b3: ['cpus', { T: 10, hold: 6, poses: [[0, 'idle'], [3.2, 'surprised'], [9, 'idle']], pops: [3.2], say: [[0, 'Hangi CPU dolu?'], [3.2, 'Sekiz CPU’nun hepsi dolu. Sorun tek CPU değil.'], [9, 'Hangi CPU dolu?']] }],
+    b2: ['stack', { T: 10.5, hold: 6, metric: p => 'r = ' + Math.round(13 * p) + ' · 8 vCPU', poses: [[0, 'think'], [3.4, 'point'], [9.4, 'think']], pops: [3.4], say: [[0, 'Run queue’da kaç task var?'], [3.4, 'r = 13. vCPU 8. Beş task run queue’da bekliyor.'], [9.4, 'Run queue’da kaç task var?']] }],
+    b3: ['cpus', { T: 10, hold: 6, poses: [[0, 'idle'], [3.2, 'surprised'], [9, 'idle']], pops: [3.2], say: [[0, 'Hangi CPU busy?'], [3.2, 'Sekiz CPU’nun hepsi busy. Sorun tek CPU değil.'], [9, 'Hangi CPU busy?']] }],
     b4: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'], [3.4, 'point'], [9.4, 'type']], pops: [3.4], say: [[0, 'Bu yükü hangi process taşıyor?'], [3.4, 'batch-worker %718. Yedi CPU’yu tek başına dolduruyor.'], [9.4, 'Bu yükü hangi process taşıyor?']] }],
-    c1: ['load', { T: 10, hold: 6, load: 12.4, poses: [[0, 'idle'], [3.2, 'think'], [9, 'idle']], pops: [3.2], say: [[0, 'Load 12.40. CPU dolu mu?'], [3.2, 'Load yüksek. Bu load CPU işi olmayabilir.'], [9, 'Load 12.40. CPU dolu mu?']] }],
+    c1: ['load', { T: 10, hold: 6, load: 12.4, poses: [[0, 'idle'], [3.2, 'think'], [9, 'idle']], pops: [3.2], say: [[0, 'Load 12.40. CPU busy mi?'], [3.2, 'Load yüksek. Bu load CPU işi olmayabilir.'], [9, 'Load 12.40. CPU busy mi?']] }],
     c2: ['stack', { T: 10.5, hold: 6, metric: p => 'b = ' + Math.round(10 * p) + ' · wa %' + Math.round(50 * p), poses: [[0, 'think'], [3.4, 'surprised'], [9.4, 'think']], pops: [3.4], say: [[0, 'CPU zamanı nereye gidiyor?'], [3.4, 'Yarısı I/O bekliyor. 10 task disk bekliyor.'], [9.4, 'CPU zamanı nereye gidiyor?']] }],
     c3: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'], [3.4, 'point'], [9.4, 'type']], pops: [3.4], say: [[0, 'Diski hangi process okuyor?'], [3.4, 'report-api saniyede 46 MB okuyor.'], [9.4, 'Diski hangi process okuyor?']] }],
-    c4: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'], [3.4, 'tired'], [9.4, 'type']], pops: [3.4], say: [[0, 'Hangi disk meşgul?'], [3.4, 'sda %99 dolu. İstekler kuyrukta bekliyor.'], [9.4, 'Hangi disk meşgul?']] }],
+    c4: ['rows', { T: 10.5, hold: 6, poses: [[0, 'type'], [3.4, 'tired'], [9.4, 'type']], pops: [3.4], say: [[0, 'Hangi disk meşgul?'], [3.4, 'sda %99 util. İstekler queue’da bekliyor.'], [9.4, 'Hangi disk meşgul?']] }],
     d1: ['load', { T: 10, hold: 6, load: 9.1, poses: [[0, 'idle'], [3.2, 'think'], [9, 'idle']], pops: [3.2], say: [[0, 'Load 9.10. 8 vCPU.'], [3.2, 'Load vCPU sayısının üstünde. CPU’nun çalıştığını kanıtlamaz.'], [9, 'Load 9.10. 8 vCPU.']] }],
     d2: ['stack', { T: 10.5, hold: 6, metric: p => 'st %' + Math.round(20 * p), poses: [[0, 'think'], [3.4, 'surprised'], [9.4, 'think']], pops: [3.4], say: [[0, 'VM CPU’yu tam kullanabildi mi?'], [3.4, 'Hayır. %20 steal: hypervisor CPU’yu başkasına verdi.'], [9.4, 'VM CPU’yu tam kullanabildi mi?']] }],
     d3: ['cpus', { T: 10, hold: 6, poses: [[0, 'idle'], [3.2, 'point'], [9, 'idle']], pops: [3.2], say: [[0, 'Steal tek CPU’da mı?'], [3.2, 'Hayır. Sekiz CPU’da da yaklaşık %20. Sorun VM’in dışında.'], [9, 'Steal tek CPU’da mı?']] }],
