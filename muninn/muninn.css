@@ -112,3 +112,21 @@
 
 :root{--amber:#ffb224}
 .mu-dots.hot span{background:var(--coral)}
+
+/* wide frame-sheet scenes on the Memory page: bigger actor panel */
+@media(min-width:761px){
+  .mu-scene[data-scene="oom"],.mu-scene[data-scene="cgroup"],.mu-scene[data-scene="wb"]{grid-template-columns:minmax(300px,400px) minmax(0,1fr)}
+  .mu-scene[data-scene="oom"] .mu-actor,.mu-scene[data-scene="cgroup"] .mu-actor,.mu-scene[data-scene="wb"] .mu-actor{--h:380px;min-height:392px;padding:6px 0 0}
+  .mu-scene[data-scene="oom"] .mu-sprites,.mu-scene[data-scene="cgroup"] .mu-sprites,.mu-scene[data-scene="wb"] .mu-sprites{width:var(--h)}
+}
+
+.mu-sprites canvas{position:absolute;left:50%;bottom:0;height:var(--h);width:auto;transform:translateX(-50%);user-select:none}
+
+/* video loop scenes: the clip fills the actor panel */
+.mu-scene.mu-vid .mu-actor{padding:0;min-height:0;aspect-ratio:1/1;display:block;background:var(--soft)}
+.mu-scene.mu-vid .mu-actor video{display:block;width:100%;height:100%;object-fit:cover}
+@media(min-width:761px){.mu-scene.mu-vid{grid-template-columns:minmax(300px,400px) minmax(0,1fr)}}
+@media(max-width:760px){.mu-scene.mu-vid .mu-actor{border-right:0;border-bottom:var(--line)}}
+
+.mu-scene.mu-vid.mu-tall .mu-actor{aspect-ratio:3/4}
+@media(min-width:761px){.mu-scene.mu-vid.mu-tall{grid-template-columns:minmax(240px,300px) minmax(0,1fr)}}
