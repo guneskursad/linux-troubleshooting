@@ -16,7 +16,7 @@ Linux sunucularda sorun giderme yazıları. Her yazı bağımsız bir case anlat
 |---|------|------|-------|
 | 01 | [İlk ölçümler](https://guneskursad.github.io/linux-troubleshooting/01-ilk-olcumler.html) | API latency ve I/O beklemesi | Yayında |
 | 02 | [CPU ve load](https://guneskursad.github.io/linux-troubleshooting/02-cpu-ve-load.html) | Dört bağımsız CPU durumu | Yayında |
-| 03 | Memory ve bekleme | Swap kullanımı var, aktif swapping yok | Yakında |
+| 03 | [Memory ve bekleme](https://guneskursad.github.io/linux-troubleshooting/03-memory-ve-bekleme.html) | Beş bağımsız memory durumu | Yayında |
 | 04 | Disk ve I/O | Backup sırasında I/O latency | Yakında |
 | 05 | Network ve packet drop | Bağımsız network alt örnekleri | Yakında |
 | 06 | Host boşken uygulama beklemesi | CPU düşük, uygulama latency yüksek | Yakında |
